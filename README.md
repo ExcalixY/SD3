@@ -76,3 +76,10 @@ src/duomenys/            po vieną failą kiekvienam duomenų generatoriui
 src/main.cpp             eksperimentų paleidimo programa
 test/                    Catch2 testai (algoritmai/, duomenys/)
 ```
+
+## Atlikti darbai
+
+1. Marija -
+2. Vincas -
+3. Ugnius -
+4. Renaldas -
