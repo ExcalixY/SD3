@@ -1,0 +1,196 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": { "major": 4, "minor": 0, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+
+    {
+      "$comment": "Platform mixins",
+      "name": "linux",
+      "hidden": true,
+      "inherits": ["base"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "darwin",
+      "hidden": true,
+      "inherits": ["base"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "windows",
+      "hidden": true,
+      "inherits": ["base"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "architecture": { "value": "x64", "strategy": "external" },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
+
+    {
+      "$comment": "Build type mixins",
+      "name": "debug",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "$comment": "Custom 'Testing' build type: debug info + sanitizers, gets its own out/<OS>-Testing dir",
+      "name": "testing",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Testing" }
+    },
+    {
+      "name": "testing-unix",
+      "hidden": true,
+      "inherits": ["testing"],
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_TESTING": "-g -O1 -fno-omit-frame-pointer -fsanitize=address,undefined",
+        "CMAKE_EXE_LINKER_FLAGS_TESTING": "-fsanitize=address,undefined"
+      }
+    },
+    {
+      "name": "testing-msvc",
+      "hidden": true,
+      "inherits": ["testing"],
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_TESTING": "/Zi /Od /fsanitize=address",
+        "CMAKE_EXE_LINKER_FLAGS_TESTING": "/DEBUG /INCREMENTAL:NO"
+      }
+    },
+
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "inherits": ["linux", "debug"]
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "inherits": ["linux", "release"]
+    },
+    {
+      "name": "linux-testing",
+      "displayName": "Linux Testing",
+      "inherits": ["linux", "testing-unix"]
+    },
+
+    {
+      "name": "darwin-debug",
+      "displayName": "macOS Debug",
+      "inherits": ["darwin", "debug"]
+    },
+    {
+      "name": "darwin-release",
+      "displayName": "macOS Release",
+      "inherits": ["darwin", "release"]
+    },
+    {
+      "name": "darwin-testing",
+      "displayName": "macOS Testing",
+      "inherits": ["darwin", "testing-unix"]
+    },
+
+    {
+      "name": "windows-debug",
+      "displayName": "Windows Debug",
+      "inherits": ["windows", "debug"]
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release",
+      "inherits": ["windows", "release"]
+    },
+    {
+      "name": "windows-testing",
+      "displayName": "Windows Testing",
+      "inherits": ["windows", "testing-msvc"]
+    }
+  ],
+  "buildPresets": [
+    { "name": "linux-debug", "configurePreset": "linux-debug" },
+    { "name": "linux-release", "configurePreset": "linux-release" },
+    { "name": "linux-testing", "configurePreset": "linux-testing" },
+
+    { "name": "darwin-debug", "configurePreset": "darwin-debug" },
+    { "name": "darwin-release", "configurePreset": "darwin-release" },
+    { "name": "darwin-testing", "configurePreset": "darwin-testing" },
+
+    { "name": "windows-debug", "configurePreset": "windows-debug" },
+    { "name": "windows-release", "configurePreset": "windows-release" },
+    { "name": "windows-testing", "configurePreset": "windows-testing" }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "stopOnFailure": false }
+    },
+    {
+      "name": "linux-testing",
+      "inherits": ["test-base"],
+      "configurePreset": "linux-testing"
+    },
+    {
+      "name": "darwin-testing",
+      "inherits": ["test-base"],
+      "configurePreset": "darwin-testing"
+    },
+    {
+      "name": "windows-testing",
+      "inherits": ["test-base"],
+      "configurePreset": "windows-testing"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "linux-testing",
+      "steps": [
+        { "type": "configure", "name": "linux-testing" },
+        { "type": "build", "name": "linux-testing" },
+        { "type": "test", "name": "linux-testing" }
+      ]
+    },
+    {
+      "name": "darwin-testing",
+      "steps": [
+        { "type": "configure", "name": "darwin-testing" },
+        { "type": "build", "name": "darwin-testing" },
+        { "type": "test", "name": "darwin-testing" }
+      ]
+    },
+    {
+      "name": "windows-testing",
+      "steps": [
+        { "type": "configure", "name": "windows-testing" },
+        { "type": "build", "name": "windows-testing" },
+        { "type": "test", "name": "windows-testing" }
+      ]
+    }
+  ]
+}
