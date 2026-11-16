@@ -1,9 +1,15 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <vector>
 
 namespace sd3 {
+
+struct SortStats {
+  uint64_t swaps = 0;
+  uint64_t checks = 0;
+};
 
 template <typename TFunc, typename T>
 auto MeasureAlgorithm(TFunc&& algorithm, std::vector<T>& data) {

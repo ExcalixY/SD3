@@ -1,6 +1,6 @@
 # SD3
 
-Rūšiavimo algoritmų (Heapsort, Quicksort, Shellsort, Merge sort, supaprastinto Timsort) eksperimentinis palyginimas su skirtingų tipų pradiniais duomenimis.
+Rūšiavimo algoritmo Heapsort eksperimentinis palyginimas su skirtingų tipų pradiniais duomenimis.
 
 ## Reikalavimai
 
@@ -79,7 +79,7 @@ test/                    Catch2 testai (algoritmai/, duomenys/)
 
 ## Atlikti darbai
 
-1. Marija -
-2. Vincas -
-3. Ugnius -
-4. Renaldas -
+1. Marija - Aprašas
+2. Vincas - Atsitiktinis ir Atvirkštinis
+3. Ugnius - Daug Pasikartojančių ir Beveik Surušiuotas
+4. Renaldas - Heapsort ir Testai
