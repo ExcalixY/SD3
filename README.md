@@ -44,6 +44,39 @@ Windows sistemoje šias komandas leiskite iš **Developer PowerShell / Developer
 
 > Pridėję naują `.cpp` failą, iš naujo paleiskite `cmake --preset {preset}`, nes šaltinio failai surenkami per glob.
 
+## Testai
+
+Testai rašomi su **Catch2** ir per `catch_discover_tests` automatiškai užregistruojami CTest'e – kiekvienas `TEST_CASE` rodomas kaip atskiras testas. Registruojant pridedamos parinktys `--success` ir `--durations yes`, todėl `ctest -V` iškart rodo teiginius ir vykdymo trukmes. Šaltiniai: `test/algoritmai/` (rūšiavimas) ir `test/duomenys/` (duomenų generatoriai).
+
+Paleisti visus testus:
+
+```bash
+ctest --preset linux-testing
+# arba nurodant build katalogą:
+ctest --test-dir build/linux-testing --output-on-failure
+```
+
+Testus galima filtruoti pagal pavadinimą arba paleisti tiesiogiai per `SD3_Test`, kad gautumėte išsamesnę Catch2 išvestį:
+
+```bash
+ctest --test-dir build/linux-testing -R heapsort -V   # tik "heapsort" testai, visa išvestis
+./out/Linux-Debug/bin/SD3_Test "[algoritmai]"         # pagal žymą
+./out/Linux-Debug/bin/SD3_Test "[duomenys]" -s -d yes # sėkmingi teiginiai + trukmės
+./out/Linux-Debug/bin/SD3_Test --list-tests            # testų sąrašas
+```
+
+Naudingos `Catch2` parinktys:
+
+| Parinktis          | Paskirtis                                                                 |
+| ------------------ | ------------------------------------------------------------------------- |
+| `-s`, `--success`  | rodo ir sėkmingus `REQUIRE`/`CHECK` teiginius su išskleistomis reikšmėmis |
+| `-v high`          | išsamesnė išvestis (testų ir `SECTION` informacija)                       |
+| `-d yes`           | kiekvieno testo ir `SECTION` vykdymo trukmė                               |
+| `-r compact`       | po vieną eilutę kiekvienam teiginiui                                      |
+| `-c "pavadinimas"` | paleisti tik pasirinktą `SECTION`                                         |
+
+Testų pavadinimai ir žymos (`[algoritmai]`, `[duomenys]`) aprašyti pačiuose `TEST_CASE` šaltiniuose. Duomenų generatorių testai tikrina 13 dydžių (nuo 0 iki 32 mln.), todėl visas ciklas užtrunka apie 35 s; kasdieniam darbui naudinga paleisti tik `[algoritmai]` arba atskirą testą pagal pavadinimą.
+
 ## Visual Studio
 
 1. **File → Open → Folder…** ir pasirinkite projekto aplanką. `.sln` failo generuoti nereikia – VS `CMakePresets.json` nuskaito tiesiogiai.

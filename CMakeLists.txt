@@ -41,4 +41,4 @@ add_executable(SD3_Test ${SD3_TEST_SRC})
 target_link_libraries(SD3_Test PUBLIC SD3_Core Catch2::Catch2WithMain)
 
 include(Catch)
-catch_discover_tests(SD3_Test)
+catch_discover_tests(SD3_Test EXTRA_ARGS --success --durations yes)

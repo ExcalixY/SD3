@@ -13,7 +13,7 @@ namespace sd3 {
 
 struct SortStats {
   uint64_t swaps = 0;
-  uint64_t checks = 0;
+  uint64_t comparisons = 0;
 };
 
 /**
@@ -69,7 +69,7 @@ void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
     if constexpr (kCountStats) {
       assert(stats != nullptr);
 
-      ++stats->checks;
+      ++stats->comparisons;
     }
 
     return std::invoke(comp, l, r);
@@ -82,7 +82,7 @@ void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
       ++stats->swaps;
     }
 
-    return std::ranges::swap(data[l], data[r]);
+    std::ranges::swap(data[l], data[r]);
   };
 
   // Sift Function

@@ -1,5 +1,0 @@
-#include <catch2/catch_test_macros.hpp>
-
-#include "duomenys.hpp"
-
-TEST_CASE("generate_sorted_runs", "[duomenys]") { }

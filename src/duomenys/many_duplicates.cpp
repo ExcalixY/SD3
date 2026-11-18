@@ -1,6 +1,5 @@
 #include <unistd.h>
 
-
 #include <cstddef>
 #include <optional>
 #include <vector>
@@ -18,7 +17,7 @@ std::vector<int> generate_many_duplicates(std::size_t size, std::optional<std::s
     different++;
 
   for (std::size_t i = 0; i < size; ++i) {
-    duplicatesArray.push_back(((i%different)+1));
+    duplicatesArray.push_back(((i % different) + 1));
   }
 
   return duplicatesArray;

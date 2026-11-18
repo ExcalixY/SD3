@@ -1,5 +1,6 @@
+#include <climits>
 #include <cstddef>
-#include <limits>
+#include <cstdint>
 #include <optional>
 #include <utility>
 #include <vector>

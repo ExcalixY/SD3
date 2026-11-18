@@ -8,7 +8,7 @@
 #include "duomenys.hpp"
 #include "helper.hpp"
 
-uint64_t check_count = 0;
+uint64_t comparison_count = 0;
 uint64_t swap_count = 0;
 std::chrono::milliseconds time_count;
 
@@ -16,10 +16,10 @@ void PrintAndResetCounters(int n, int m) {
   double count = static_cast<double>(n * m);
 
   std::println("\tLaikas (avg. ms): {}", (time_count / count).count());
-  std::println("\tPalyginimai (avg. count): {}", static_cast<double>(check_count) / count);
+  std::println("\tPalyginimai (avg. count): {}", static_cast<double>(comparison_count) / count);
   std::println("\tSukeitimai (avg. count): {}", static_cast<double>(swap_count) / count);
 
-  check_count = 0;
+  comparison_count = 0;
   swap_count = 0;
   time_count = std::chrono::milliseconds::zero();
 }
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     std::println("Atsitiktiniai skaičiai [5 aibės | 7 kartai]:");
 
-    check_count = 0;
+    comparison_count = 0;
     swap_count = 0;
     time_count = std::chrono::milliseconds::zero();
 
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
       for (std::size_t m = 0; m < 7; ++m) {
         auto [stats, time] = sd3::MeasureHeapsort(data);
 
-        check_count += stats.checks;
+        comparison_count += stats.comparisons;
         swap_count += stats.swaps;
         time_count += time;
       }
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     for (std::size_t m = 0; m < 7; ++m) {
       auto [stats, time] = sd3::MeasureHeapsort(data);
 
-      check_count += stats.checks;
+      comparison_count += stats.comparisons;
       swap_count += stats.swaps;
       time_count += time;
     }
@@ -71,28 +71,26 @@ int main(int argc, char* argv[]) {
     for (std::size_t m = 0; m < 7; ++m) {
       auto [stats, time] = sd3::MeasureHeapsort(data);
 
-      check_count += stats.checks;
+      comparison_count += stats.comparisons;
       swap_count += stats.swaps;
       time_count += time;
     }
     PrintAndResetCounters(1, 7);
 
-    // TODO: Implement Many Duplicates
+    std::println("Daug pasikartojančių: [5 aibės | 7 kartai]:");
+    // Many Duplicated
+    for (std::size_t n = 0; n < 5; ++n) {
+      data = sd3::generate_many_duplicates(l);
 
-    // std::println("Daug pasikartojančių: [5 aibės | 7 kartai]:");
-    // // Many Duplicated
-    // for (std::size_t n = 0; n < 5; ++n) {
-    //   data = sd3::generate_many_duplicates(l);
+      for (std::size_t m = 0; m < 7; ++m) {
+        auto [stats, time] = sd3::MeasureHeapsort(data);
 
-    //   for (std::size_t m = 0; m < 7; ++m) {
-    //     auto [stats, time] = sd3::MeasureHeapsort(data);
-
-    //     check_count += stats.checks;
-    //     swap_count += stats.swaps;
-    //     time_count += time;
-    //   }
-    // }
-    // PrintAndResetCounters(5, 7);
+        comparison_count += stats.comparisons;
+        swap_count += stats.swaps;
+        time_count += time;
+      }
+    }
+    PrintAndResetCounters(5, 7);
   }
 
   return 0;
