@@ -33,6 +33,21 @@ std::pair<SortStats, std::chrono::milliseconds> MeasureHeapsort(const std::vecto
 }
 
 template <typename T>
+std::pair<SortStats, std::chrono::milliseconds> MeasureHeapsortSlow(const std::vector<T>& data) {
+  SortStats stats{};
+
+  std::vector<T> data_counted = data;
+
+  auto time_pre = std::chrono::high_resolution_clock::now();
+
+  sd3::heapsort<true>(data_counted, std::less<>{}, &stats);
+
+  auto time_post = std::chrono::high_resolution_clock::now();
+
+  return {stats, std::chrono::duration_cast<std::chrono::milliseconds>(time_post - time_pre)};
+}
+
+template <typename T>
 std::vector<T> GenerateFromFile(const std::string& filepath, std::size_t n) {
   std::vector<T> vec(n);
 

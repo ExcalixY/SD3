@@ -57,6 +57,10 @@ requires
 void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
   // Baisiai perdarytas Heapsort algoritmas ;P
 
+  if constexpr (kCountStats) {
+    assert(stats != nullptr);
+  }
+
   using T = std::ranges::range_value_t<R>;
 
   std::span<T> data{std::ranges::data(range), std::ranges::size(range)};
@@ -67,8 +71,6 @@ void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
 
   auto compare = [&](const T& l, const T& r) -> bool {
     if constexpr (kCountStats) {
-      assert(stats != nullptr);
-
       ++stats->comparisons;
     }
 
@@ -77,8 +79,6 @@ void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
 
   auto swap_at = [&](std::size_t l, std::size_t r) {
     if constexpr (kCountStats) {
-      assert(stats != nullptr);
-
       ++stats->swaps;
     }
 
@@ -117,7 +117,12 @@ void heapsort(R&& range, TCompare comp = {}, SortStats* stats = nullptr) {
   }
 }
 
-// TODO: Nereikia sito kaip suprantu
+// INFO: Jeigu kas norės patys heapsorta dar padaryt, tai nesikniskit su templates, tiesiog užkomentuokit ką aš parašiau
+// ir čia parašykit implementaciją. Meta-programavimas duoda žmonėm depresijos, nepatariu ;P
+//
+// void heapsort(std::vector<int>& data, SortStats* stats = nullptr);
+
+// INFO: Nereikia šitų kaip suprantu
 // void quicksort_middle(std::vector<int>& data);
 // void quicksort_median(std::vector<int>& data);
 // void shellsort_sedgewick(std::vector<int>& data);

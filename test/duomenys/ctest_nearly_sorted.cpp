@@ -18,7 +18,6 @@ TEST_CASE("generate_nearly_sorted is ordered except for the last two elements", 
     REQUIRE(std::is_sorted(list.begin(), list.end() - 2));
     REQUIRE(list[n - 1] < list[n - 2]);
 
-    // Swapping the last two back should make the whole list sorted.
     auto fixed = list;
     std::swap(fixed[n - 2], fixed[n - 1]);
     REQUIRE(std::is_sorted(fixed.begin(), fixed.end()));
