@@ -22,7 +22,7 @@ Visi kompiliavimo nustatymai yra `CMakePresets.json` faile. Kiekviena OS mato ti
 
 `{os}` – `linux`, `darwin` (macOS) arba `windows`.
 
-Kompiliavimo failai saugomi `build/{preset}/`, vykdomieji failai – `out/{OS}-{BuildType}/bin/` (`SD3` ir `SD3_Test`).
+Kompiliavimo failai saugomi `build/{preset}/`, vykdomieji failai – `out/{OS}-{BuildType}/bin/`: `SD3_Generate`, `SD3`, `SD3_Test` ir `SD3_ProfTest`.
 
 Asmeniniams nustatymams susikurkite `CMakeUserPresets.json` (jis įtrauktas į `.gitignore`), o ne redaguokite `CMakePresets.json`.
 
@@ -31,7 +31,6 @@ Asmeniniams nustatymams susikurkite `CMakeUserPresets.json` (jis įtrauktas į `
 ```bash
 cmake --preset linux-release
 cmake --build --preset linux-release
-./out/Linux-Release/bin/SD3
 ```
 
 Sukonfigūruoti, sukompiliuoti ir paleisti visus testus vienu žingsniu:
@@ -43,6 +42,48 @@ cmake --workflow --preset linux-testing
 Windows sistemoje šias komandas leiskite iš **Developer PowerShell / Developer Command Prompt for VS**, kad būtų randamas `cl`, ir naudokite `windows-*` presetus.
 
 > Pridėję naują `.cpp` failą, iš naujo paleiskite `cmake --preset {preset}`, nes šaltinio failai surenkami per glob.
+
+## Darbo eiga
+
+Visi vykdomieji failai yra `out/{OS}-{BuildType}/bin/`. Įprasta tvarka:
+
+**1. Sugeneruoti duomenis – `SD3_Generate`.** Sukuria failus keturiems duomenų tipams ir penkiems dydžiams (2, 4, 8, 16, 32 mln.) kataloguose `Atsitiktiniai/`, `BeveikSurusiuota/`, `Atvirkstine/`, `DaugPasikartojanciu/`. Failų vardai: `[n]mil-[m]_[a].[txt|bin]`.
+
+```bash
+cd out/Linux-Release/bin
+./SD3_Generate
+```
+
+| Parinktis  | Paskirtis                                                         |
+| ---------- | ----------------------------------------------------------------- |
+| `--bin`    | rašyti dvejetainius failus (vietoje tekstinių, numatytasis – txt) |
+| `--signed` | generuoti `int32_t` reikšmes (numatytasis tipas – `unsigned int`) |
+| `--seed N` | generatoriaus pradinė sėkla (kiekvienas failas gauna N, N+1, …)   |
+
+**2. Atlikti matavimus – `SD3`.** Paleiskite **tame pačiame kataloge**, kuriame `SD3_Generate` sukūrė duomenų katalogus. Programa rūšiuoja kiekvieną failą po 7 kartų ir išveda vidutinius laiko, palyginimų bei sukeitimų skaičius, sugrupuotus pagal tipą.
+
+```bash
+./SD3             # tekstiniai failai (numatytasis variantas)
+./SD3 --bin       # dvejetainiai failai
+./SD3 --signed    # signed (int32_t) failai
+```
+
+**3. Patikrinti, ar viskas tvarkoje – `SD3_Test`.** Catch2 testai tikrina rūšiavimo algoritmą ir duomenų generatorius; juos galima paleisti ir per CTest (žr. skyrių „Testai“).
+
+```bash
+./SD3_Test
+```
+
+**4. Palyginti su dėstytojo failu – `SD3_ProfTest`.** Įdėkite dėstytojo atsiųstą `2mil-1.txt` šalia vykdomojo failo ir paleiskite:
+
+```bash
+cp ~/Downloads/2mil-1.txt .
+./SD3_ProfTest
+```
+
+Programa nuskaito failą kaip `uint32_t`, rūšiuoja jį ir spausdina laiką, palyginimų ir sukeitimų skaičius – jie turi atitikti dėstytojo pateiktus rezultatus.
+
+Trumpai: `SD3_Generate` → `SD3`, o `SD3_Test` ir `SD3_ProfTest` tikrina atitinkamai vidinę logiką ir rezultatą su dėstytojo duomenimis.
 
 ## Testai
 
@@ -102,11 +143,13 @@ Pastabos:
 ## Projekto struktūra
 
 ```
-include/algoritmai.hpp   rūšiavimo algoritmų deklaracijos
-include/duomenys.hpp     duomenų generatorių deklaracijos
-src/algoritmai/          po vieną failą kiekvienam rūšiavimo algoritmui
-src/duomenys/            po vieną failą kiekvienam duomenų generatoriui
-src/main.cpp             eksperimentų paleidimo programa
+SD3_Core/                pagrindinė biblioteka
+  include/               algoritmai.hpp, duomenys.hpp, helper.hpp
+  src/algoritmai/        Heapsort realizacija (šaltinio failas)
+  src/duomenys/          duomenų generatorių apibrėžtys
+SD3_Main/                matavimų programa (vykdomasis failas SD3)
+SD3_Generate/            duomenų failų generatorius (SD3_Generate)
+SD3_ProfTest/            patikra su dėstytojo failu (SD3_ProfTest)
 test/                    Catch2 testai (algoritmai/, duomenys/)
 ```
 
